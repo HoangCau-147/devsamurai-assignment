@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:15
+    container_name: devsamurai-postgres
+    environment:
+      POSTGRES_USER: devsamurai
+      POSTGRES_PASSWORD: devsamurai
+      POSTGRES_DB: devsamurai
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+volumes:
+  db-data: {}
