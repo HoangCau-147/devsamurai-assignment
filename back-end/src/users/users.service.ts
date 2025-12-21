@@ -28,10 +28,10 @@ export class UsersService {
 
     if (existing) throw new ConflictException('Email already in use');
 
-    const passwordHash = await bcrypt.hash(
-      password,
-      process.env.SALT_ROUNDS ?? '10',
-    );
+    const saltRounds = Number.parseInt(process.env.SALT_ROUNDS ?? '10', 10);
+    const rounds = Number.isNaN(saltRounds) ? 10 : saltRounds;
+
+    const passwordHash = await bcrypt.hash(password, rounds);
 
     const user = await this.prisma.user.create({
       data: { name, email, passwordHash },
