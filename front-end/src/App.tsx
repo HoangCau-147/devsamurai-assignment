@@ -8,7 +8,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<AuthPage />} />
+        <Route path="/login" element={<Dashboard />} />
         <Route
           path="/"
           element={
