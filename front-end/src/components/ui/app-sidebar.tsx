@@ -3,21 +3,19 @@
 import * as React from "react"
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
   Command,
-  Frame,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
+  Home,
+  MessageCircle,
+  Plus,
+  Settings,
+  Users,
 } from "lucide-react"
 
-import { NavMain } from "./nav-main"
 import { NavProjects } from "./nav-projects"
 import { NavUser } from "./nav-user"
 import { TeamSwitcher } from "./team-switcher"
+import DraggableDropdown from "./draggable-dropdown"
 import {
   Sidebar,
   SidebarContent,
@@ -25,133 +23,60 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { getUser } from "@/lib/auth"
 
-// This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: getUser()!.name,
+    email: getUser()!.email,
     avatar: "/avatars/shadcn.jpg",
   },
   teams: [
     {
       name: "Acme Inc",
       logo: GalleryVerticalEnd,
-      plan: "Enterprise",
     },
     {
       name: "Acme Corp.",
       logo: AudioWaveform,
-      plan: "Startup",
     },
     {
       name: "Evil Corp.",
       logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
     },
   ],
   projects: [
     {
-      name: "Design Engineering",
+      name: "Home",
       url: "#",
-      icon: Frame,
+      icon: Home,
     },
     {
-      name: "Sales & Marketing",
+      name: "Contacts",
       url: "#",
-      icon: PieChart,
+      icon: Users,
     },
     {
-      name: "Travel",
+      name: "Settings",
       url: "#",
-      icon: Map,
+      icon: Settings,
+    },
+  ],
+  favorites: [
+    { id: "google", name: "Google", icon: GalleryVerticalEnd },
+    { id: "airbnb", name: "Airbnb", icon: AudioWaveform },
+    { id: "microsoft", name: "Microsoft", icon: Command },
+  ],
+  extends: [
+    {
+      name: "Invite members",
+      url: "#",
+      icon: Plus,
+    },
+    {
+      name: "Feedback",
+      url: "#",
+      icon: MessageCircle,
     },
   ],
 }
@@ -162,11 +87,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
+
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavProjects items={data.projects} />
+
+        <div className="p-3">
+          <DraggableDropdown
+            items={data.favorites}
+            title="Favorites"
+            triggerLabel="Favorites"
+            onOrderChange={(newItems) => console.log("favorites order", newItems)}
+          />
+        </div>
       </SidebarContent>
+
       <SidebarFooter>
+        <NavProjects items={data.extends} />
+
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
