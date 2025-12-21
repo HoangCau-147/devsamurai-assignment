@@ -16,13 +16,13 @@ export default function Dashboard() {
       <AppSidebar />
       <SidebarInset>
         <header className="w-full flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
+          <div className="flex w-full items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"
             />
-            <div className="flex ml-auto flex-row items-center">
+            <div className="flex flex-1 flex-row items-center">
               <div className="flex flex-row items-center gap-2">
                 <h1 className="text-sm font-semibold">Overview</h1>
                 <svg
@@ -45,7 +45,7 @@ export default function Dashboard() {
                 </svg>
               </div>
 
-              <div className="flex items-center gap-2 ">
+              <div className="w-full flex items-center gap-2 pr-4 self-end">
                 <a
                   target="_blank"
                   className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md cursor-pointer text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-9"
@@ -95,13 +95,15 @@ export default function Dashboard() {
             </div>
           </div>
         </header>
-        <div className="flex flex-1 justify-center flex-col gap-4 p-4 pt-0">
-          <DatePickerWithRangeForm></DatePickerWithRangeForm>
-          <div className="mx-auto max-w-6xl">
-            <ChartBarInteractive></ChartBarInteractive>
+        <div className="flex flex-1 flex-col gap-4 pt-0">
+          <div className="w-full border border-solid border-x-0 px-6">
+            <DatePickerWithRangeForm />
+          </div>
+          <div className="w-full mx-auto max-w-6xl">
+            <ChartBarInteractive />
             <div className="flex gap-6">
-              <TableDemo></TableDemo>
-              <TableDemo></TableDemo>
+              <TableDemo />
+              <TableDemo />
             </div>
           </div>
         </div>

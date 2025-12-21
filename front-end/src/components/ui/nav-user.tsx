@@ -1,14 +1,8 @@
-"use client"
+"use client";
 
-import {
-  Ellipsis,
-} from "lucide-react"
+import { Ellipsis } from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,28 +12,68 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { ThemeSwitcher } from "../theme-switcher"
-import { useState } from "react"
+} from "@/components/ui/sidebar";
+import { ThemeSwitcher } from "../theme-switcher";
+import { useState, useEffect, useRef } from "react";
+import {
+  getStoredTheme,
+  setStoredTheme,
+  applyTheme,
+  watchSystemTheme,
+  type Theme,
+} from "@/lib/theme";
 
 export function NavUser({
   user,
 }: {
   user: {
-    name: string
-    email: string
-    avatar: string
-  }
+    name: string;
+    email: string;
+    avatar: string;
+  };
 }) {
-  const { isMobile } = useSidebar()
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
+  const { isMobile } = useSidebar();
+  const [theme, setTheme] = useState<Theme>(() => {
+    const stored = getStoredTheme();
+    return stored ?? "system";
+  });
+  const systemUnwatch = useRef<() => void | null>(null);
+
+  useEffect(() => {
+    applyTheme(theme);
+
+    if (theme === "system") {
+      systemUnwatch.current = watchSystemTheme((isDark) => {
+        document.documentElement.classList.toggle("dark", isDark);
+      });
+    }
+
+    return () => {
+      systemUnwatch.current?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    setStoredTheme(theme);
+    applyTheme(theme);
+
+    if (theme === "system") {
+      systemUnwatch.current = watchSystemTheme((isDark) => {
+        document.documentElement.classList.toggle("dark", isDark);
+      });
+    } else {
+      systemUnwatch.current?.();
+      systemUnwatch.current = null;
+    }
+  }, [theme]);
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -101,7 +135,11 @@ export function NavUser({
               <DropdownMenuItem>
                 Theme
                 <DropdownMenuShortcut>
-                  <ThemeSwitcher defaultValue="system" onChange={setTheme} value={theme}></ThemeSwitcher>
+                  <ThemeSwitcher
+                    defaultValue="system"
+                    onChange={setTheme}
+                    value={theme}
+                  ></ThemeSwitcher>
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuGroup>

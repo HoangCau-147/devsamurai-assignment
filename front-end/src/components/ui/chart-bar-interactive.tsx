@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { addDays, parseISO } from "date-fns"
+import { useAppSelector } from "@/store/hooks"
 
 import {
   Card,
@@ -80,6 +82,36 @@ const chartData = [
   { date: "2025-11-28", people: 149, companies: 200 },
   { date: "2025-11-29", people: 103, companies: 160 },
   { date: "2025-11-30", people: 446, companies: 400 },
+  { date: "2025-12-01", people: 178, companies: 200 },
+  { date: "2025-12-02", people: 470, companies: 410 },
+  { date: "2025-12-03", people: 103, companies: 160 },
+  { date: "2025-12-04", people: 439, companies: 380 },
+  { date: "2025-12-05", people: 88, companies: 140 },
+  { date: "2025-12-06", people: 294, companies: 250 },
+  { date: "2025-12-07", people: 323, companies: 370 },
+  { date: "2025-12-08", people: 385, companies: 320 },
+  { date: "2025-12-09", people: 438, companies: 480 },
+  { date: "2025-12-10", people: 155, companies: 200 },
+  { date: "2025-12-11", people: 92, companies: 150 },
+  { date: "2025-12-12", people: 492, companies: 420 },
+  { date: "2025-12-13", people: 81, companies: 130 },
+  { date: "2025-12-14", people: 426, companies: 380 },
+  { date: "2025-12-15", people: 307, companies: 350 },
+  { date: "2025-12-16", people: 371, companies: 310 },
+  { date: "2025-12-17", people: 475, companies: 520 },
+  { date: "2025-12-18", people: 107, companies: 170 },
+  { date: "2025-12-19", people: 341, companies: 290 },
+  { date: "2025-12-20", people: 408, companies: 450 },
+  { date: "2025-12-21", people: 169, companies: 210 },
+  { date: "2025-12-22", people: 317, companies: 270 },
+  { date: "2025-12-23", people: 480, companies: 530 },
+  { date: "2025-12-24", people: 132, companies: 180 },
+  { date: "2025-12-25", people: 141, companies: 190 },
+  { date: "2025-12-26", people: 434, companies: 380 },
+  { date: "2025-12-27", people: 448, companies: 490 },
+  { date: "2025-12-28", people: 149, companies: 200 },
+  { date: "2025-12-29", people: 103, companies: 160 },
+  { date: "2025-12-30", people: 446, companies: 400 },
 ]
 
 const chartConfig = {
@@ -100,16 +132,38 @@ export function ChartBarInteractive() {
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>("people")
 
+  const dateRange = useAppSelector((s) => s.dateRange)
+
+  const filteredData = React.useMemo(() => {
+    let from: Date | null = null
+    let to: Date | null = null
+
+    if (dateRange.mode === "preset") {
+      to = new Date()
+      from = addDays(to, -dateRange.days)
+    } else if (dateRange.mode === "custom" && dateRange.from && dateRange.to) {
+      from = parseISO(dateRange.from)
+      to = parseISO(dateRange.to)
+    }
+
+    if (!from || !to) return chartData
+
+    return chartData.filter((d) => {
+      const date = new Date(d.date)
+      return (date >= from && date <= to)
+    })
+  }, [dateRange])
+
   const total = React.useMemo(
     () => ({
-      people: chartData.reduce((acc, curr) => acc + curr.people, 0),
-      companies: chartData.reduce((acc, curr) => acc + curr.companies, 0),
+      people: filteredData.reduce((acc, curr) => acc + curr.people, 0),
+      companies: filteredData.reduce((acc, curr) => acc + curr.companies, 0),
     }),
-    []
+    [filteredData]
   )
 
   return (
-    <Card className="py-0">
+    <Card className="py-0 w-full">
       <CardHeader className="flex flex-col items-stretch border-b p-0! sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-0!">
           <CardTitle>Lead generation</CardTitle>
@@ -145,7 +199,7 @@ export function ChartBarInteractive() {
         >
           <BarChart
             accessibilityLayer
-            data={chartData}
+            data={filteredData}
             margin={{
               left: 12,
               right: 12,

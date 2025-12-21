@@ -40,7 +40,7 @@ const invoices = [
 
 export function TableDemo() {
   return (
-    <Table>
+    <Table className='border-t-0'>
       <span className="block mb-4 w-full">Most visited contacts</span>
       <TableHeader>
         <TableRow>
