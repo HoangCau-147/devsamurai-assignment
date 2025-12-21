@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type React from 'react';
 import { Link, useNavigate } from "react-router-dom";
 
 import { isAuthenticated } from "../lib/auth";
@@ -16,13 +17,49 @@ import { Label } from "@/components/ui/label";
 
 export default function AuthPage() {
   const navigate = useNavigate();
-  const [currentTab, setCurrentTab] = useState<"login" | "signup">("signup");
+  const [currentTab, setCurrentTab] = useState<"login" | "signup">("login");
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAuthenticated()) {
       navigate("/");
     }
   }, [navigate]);
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const { login } = await import('../services/auth');
+      await login({ email, password });
+      navigate('/');
+    } catch (err: any) {
+      setError(err?.message ?? 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSignup(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const { signup } = await import('../services/auth');
+      await signup({ name, email, password });
+      navigate('/');
+    } catch (err: any) {
+      setError(err?.message ?? 'Signup failed');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="w-screen h-screen flex flex-col items-center py-12">
@@ -60,14 +97,16 @@ export default function AuthPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form>
+            <form onSubmit={handleSignup}>
               <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Name</Label>
+                  <Label htmlFor="name">Name</Label>
                   <Input
-                    id="email"
+                    id="name"
                     type="text"
                     required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     icon={
                       <svg
                         className="w-4 h-4 text-muted-foreground"
@@ -100,6 +139,8 @@ export default function AuthPage() {
                     id="email"
                     type="email"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     icon={
                       <svg
                         className="w-4 h-4 text-muted-foreground"
@@ -138,6 +179,8 @@ export default function AuthPage() {
                     id="password"
                     variant="password"
                     required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     icon={
                       <svg
                         className="w-4 h-4 text-muted-foreground"
@@ -170,10 +213,11 @@ export default function AuthPage() {
                 </div>
               </div>
             </form>
+            {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
           </CardContent>
           <CardFooter className="flex-col gap-4">
-            <Button type="submit" className="w-full">
-              Create account
+            <Button type="button" className="w-full" disabled={loading} onClick={handleSignup}>
+              {loading ? 'Creating...' : 'Create account'}
             </Button>
 
             <div className="w-full flex items-center text-sm text-muted-foreground before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-neutral-500 dark:before:border-neutral-600 dark:after:border-neutral-600">Or continue with</div>
@@ -252,7 +296,7 @@ export default function AuthPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form>
+            <form onSubmit={handleLogin}>
               <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
@@ -260,6 +304,8 @@ export default function AuthPage() {
                     id="email"
                     type="email"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     icon={
                       <svg
                         className="w-4 h-4 text-muted-foreground"
@@ -295,7 +341,7 @@ export default function AuthPage() {
                     <Label htmlFor="password">Password</Label>
                     <a
                       href="#"
-                      className="ml-auto inline-block text-sm underline hover:cursor-pointer text-black-offset-4 underline"
+                      className="ml-auto inline-block text-sm underline hover:cursor-pointer text-black-offset-4"
                     >
                       Forgot your password?
                     </a>
@@ -304,6 +350,8 @@ export default function AuthPage() {
                     id="password"
                     variant="password"
                     required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     icon={
                       <svg
                         className="w-4 h-4 text-muted-foreground"
@@ -336,10 +384,11 @@ export default function AuthPage() {
                 </div>
               </div>
             </form>
+            {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
           </CardContent>
           <CardFooter className="flex-col gap-4">
-            <Button type="submit" className="w-full">
-              Sign in
+            <Button type="button" className="w-full" disabled={loading} onClick={handleLogin}>
+              {loading ? 'Signing in...' : 'Sign in'}
             </Button>
 
             <div className="w-full flex items-center text-sm text-muted-foreground before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-neutral-500 dark:before:border-neutral-600 dark:after:border-neutral-600">Or continue with</div>
