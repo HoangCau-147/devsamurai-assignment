@@ -1,24 +1,41 @@
 "use client"
 
 import * as React from "react"
-import { ChevronsUpDown, Plus } from "lucide-react"
+import { ChevronsUpDown, Ellipsis, Plus, Settings, User } from "lucide-react"
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar"
+import {
+  Avatar,
+  AvatarFallback,
+} from "@/components/ui/avatar"
+import SearchInput from "@/components/ui/search-input"
 
+import { getUser } from "@/lib/auth"
+
+const projects = [
+  {
+    name: "Account settings",
+    url: "#",
+    icon: User,
+  },
+  {
+    name: "Organization settings",
+    url: "#",
+    icon: Settings,
+  },
+];
+  
 export function TeamSwitcher({
   teams,
 }: {
@@ -28,12 +45,7 @@ export function TeamSwitcher({
     plan: string
   }[]
 }) {
-  const { isMobile } = useSidebar()
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
-
-  if (!activeTeam) {
-    return null
-  }
+  const userName = getUser()!.name;
 
   return (
     <SidebarMenu>
@@ -44,48 +56,78 @@ export function TeamSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <activeTeam.logo className="size-4" />
-              </div>
+              <Avatar className="h-6 w-6 rounded-md border-2 border-solid border-gray-200">
+                <AvatarFallback className="rounded-md bg-gray-200/50">
+                  {userName!.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{activeTeam.name}</span>
-                <span className="truncate text-xs">{activeTeam.plan}</span>
+                <span className="truncate font-medium">{userName}</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent
             className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
             align="start"
-            side={isMobile ? "bottom" : "right"}
+            side="bottom"
             sideOffset={4}
           >
-            <DropdownMenuLabel className="text-muted-foreground text-xs">
-              Teams
-            </DropdownMenuLabel>
-            {teams.map((team, index) => (
-              <DropdownMenuItem
-                key={team.name}
-                onClick={() => setActiveTeam(team)}
-                className="gap-2 p-2"
-              >
-                <div className="flex size-6 items-center justify-center rounded-md border">
-                  <team.logo className="size-3.5 shrink-0" />
-                </div>
-                {team.name}
-                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            ))}
+            <SearchInput></SearchInput>
+
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                <Plus className="size-4" />
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            >
+              <Avatar className="h-5 w-5 rounded-xs border border-solid border-gray-200">
+                <AvatarFallback className="rounded-xs bg-gray-200/50">
+                  {userName!.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate">{userName}</span>
               </div>
-              <div className="text-muted-foreground font-medium">Add team</div>
+              <div className="relative">
+                  <input checked type="checkbox" className="sr-only peer" />
+                  <div className="w-4 h-4 bg-gray-200 rounded-full border-2 border-gray-300 peer-checked:bg-blue-500 peer-checked:border-blue-500 transition-all duration-200 peer-focus:ring-2 peer-focus:ring-blue-300 peer-focus:ring-offset-2"></div>
+                  <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white hidden peer-checked:block pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                  </svg>
+              </div>
+            </SidebarMenuButton>
+            <DropdownMenuItem className="gap-2 p-2">
+              <Ellipsis />
+              <div className="text-muted-foreground font-medium">
+                All organizations
+              </div>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <SidebarMenu>
+              {projects.map((item) => (
+                <SidebarMenuItem key={item.name}>
+                  <SidebarMenuButton asChild>
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.name}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem className="gap-2 p-2">
+              <Plus className="text-black" />
+              <div className="font-medium">Add organization</div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

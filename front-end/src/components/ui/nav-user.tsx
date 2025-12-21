@@ -1,19 +1,8 @@
-"use client"
+"use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react"
+import { Ellipsis } from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,25 +10,69 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { ThemeSwitcher } from "../theme-switcher";
+import { useState, useEffect, useRef } from "react";
+import {
+  getStoredTheme,
+  setStoredTheme,
+  applyTheme,
+  watchSystemTheme,
+  type Theme,
+} from "@/lib/theme";
 
 export function NavUser({
   user,
 }: {
   user: {
-    name: string
-    email: string
-    avatar: string
-  }
+    name: string;
+    email: string;
+    avatar: string;
+  };
 }) {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
+  const [theme, setTheme] = useState<Theme>(() => {
+    const stored = getStoredTheme();
+    return stored ?? "system";
+  });
+  const systemUnwatch = useRef<() => void | null>(null);
+
+  useEffect(() => {
+    applyTheme(theme);
+
+    if (theme === "system") {
+      systemUnwatch.current = watchSystemTheme((isDark) => {
+        document.documentElement.classList.toggle("dark", isDark);
+      });
+    }
+
+    return () => {
+      systemUnwatch.current?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    setStoredTheme(theme);
+    applyTheme(theme);
+
+    if (theme === "system") {
+      systemUnwatch.current = watchSystemTheme((isDark) => {
+        document.documentElement.classList.toggle("dark", isDark);
+      });
+    } else {
+      systemUnwatch.current?.();
+      systemUnwatch.current = null;
+    }
+  }, [theme]);
 
   return (
     <SidebarMenu>
@@ -52,18 +85,21 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-full bg-pink-600 text-white">
+                  CN
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <Ellipsis className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent
             className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? "bottom" : "top"}
             align="end"
             sideOffset={4}
           >
@@ -82,33 +118,39 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
+                Profile
+                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                Billing
+                <DropdownMenuShortcut>⇧⌘B</DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <BadgeCheck />
-                Account
+                Command Menu
+                <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
+                Theme
+                <DropdownMenuShortcut>
+                  <ThemeSwitcher
+                    defaultValue="system"
+                    onChange={setTheme}
+                    value={theme}
+                  ></ThemeSwitcher>
+                </DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <LogOut />
               Log out
+              <DropdownMenuShortcut>⇧⌘S</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }
