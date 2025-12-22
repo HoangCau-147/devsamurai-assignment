@@ -8,7 +8,16 @@ import {
 
 import { ChartBarInteractive } from "@/components/ui/chart-bar-interactive"
 import { DatePickerWithRangeForm } from "@/components/ui/date-pick-range"
-import { TableDemo } from "@/components/Table"
+import { TableVisit, type ContactItem } from "@/components/Table"
+
+export const SAMPLE_CONTACTS: ContactItem[] = [
+  { id: "1", name: "Airbnb", avatar: null, count: 3 },
+  { id: "2", name: "Vivian Casey", avatar: null, count: 1 },
+  { id: "3", name: "Zoom", avatar: null, count: 0 },
+  { id: "4", name: "PayPal", avatar: null, count: 0 },
+  { id: "5", name: "Thomas Clark", avatar: null, count: 0 },
+  { id: "6", name: "Gabriel Fischer", avatar: null, count: 0 },
+]
 
 export default function Dashboard() {
   return (
@@ -95,15 +104,15 @@ export default function Dashboard() {
             </div>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 pt-0">
+        <div className="flex flex-1 flex-col gap-6 pt-0">
           <div className="w-full border border-solid border-x-0 px-6">
             <DatePickerWithRangeForm />
           </div>
           <div className="w-full mx-auto max-w-6xl">
-            <ChartBarInteractive />
-            <div className="flex gap-6">
-              <TableDemo />
-              <TableDemo />
+            <ChartBarInteractive/>
+            <div className="flex gap-8 mt-8">
+              <TableVisit items={SAMPLE_CONTACTS} />
+              <TableVisit items={SAMPLE_CONTACTS} />
             </div>
           </div>
         </div>
