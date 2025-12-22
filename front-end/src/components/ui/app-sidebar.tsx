@@ -109,17 +109,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             items={data.favorites}
             title="Favorites"
             triggerLabel="Favorites"
-            onOrderChange={(newItems) => console.log("favorites order", newItems)}
+            onOrderChange={(newItems) =>
+              console.log("favorites order", newItems)
+            }
           />
         </div>
       </SidebarContent>
 
       <SidebarFooter>
-        <NavMain items={data.extends} />
+        <div className="text-gray-500">
+          <NavMain items={data.extends} />
+        </div>
 
         <NavUser user={dataUser.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

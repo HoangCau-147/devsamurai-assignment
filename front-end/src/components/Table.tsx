@@ -32,8 +32,8 @@ export function TableVisit({
               className="group hover:bg-muted/30 transition-colors duration-150 border-b-0"
             >
               <TableCell className="font-medium first:rounded-l-sm last:rounded-r-rounded-l-sm">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-5 w-5">
+                <div className="flex items-center gap-3 ">
+                  <Avatar className="h-5 w-5 text-gray-500">
                     {item.avatar ? (
                       <AvatarImage src={item.avatar} alt={item.name} />
                     ) : (

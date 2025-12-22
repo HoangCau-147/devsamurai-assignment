@@ -54,8 +54,8 @@ export function TeamSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-6 w-6 rounded-md border-2 border-solid border-gray-200">
-                <AvatarFallback className="rounded-md bg-gray-200/50">
+              <Avatar className="h-6 w-6 rounded-md border border-solid border-gray-500 dark:border-gray-100/10">
+                <AvatarFallback className="rounded-md text-gray-500 bg-gray-200/50 dark:bg-transparent">
                   {user.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -80,7 +80,7 @@ export function TeamSwitcher({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-5 w-5 rounded-xs border border-solid border-gray-200">
-                <AvatarFallback className="rounded-xs bg-gray-200/50">
+                <AvatarFallback className="rounded-xs text-gray-500 bg-gray-200/50">
                   {user.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
