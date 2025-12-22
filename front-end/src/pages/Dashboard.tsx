@@ -11,6 +11,7 @@ import { DatePickerWithRangeForm } from "@/components/ui/date-pick-range"
 import { TableVisit, type ContactItem } from "@/components/Table"
 
 import usePageTitle from "@/hooks/use-page-title"
+import { CircleAlert } from "lucide-react"
 
 const MOST_VISIT_CONTACTS: ContactItem[] = [
   { id: "1", name: "Airbnb", avatar: null, count: 3 },
@@ -47,24 +48,7 @@ export default function Dashboard() {
             <div className="flex flex-1 flex-row items-center">
               <div className="flex flex-row items-center gap-2">
                 <h1 className="text-sm font-semibold">Overview</h1>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-info hidden size-3.5 shrink-0 text-muted-foreground sm:inline"
-                  data-state="closed"
-                  data-slot="tooltip-trigger"
-                >
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M12 16v-4"></path>
-                  <path d="M12 8h.01"></path>
-                </svg>
+                <CircleAlert className="w-4 h-4" />
               </div>
 
               <div className="w-full flex items-center gap-2 pr-4 self-end">

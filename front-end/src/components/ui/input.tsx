@@ -11,7 +11,8 @@ function Input({ className, type = "text", icon, variant, ...props }: InputProps
   const [show, setShow] = React.useState(false)
   const isPassword = variant === "password" || type === "password"
   const inputType = isPassword ? (show ? "text" : "password") : type
-
+  const hasError = props["aria-invalid"] === true || props["aria-invalid"] === "true";
+  
   return (
     <div className="relative w-full">
       {icon ? (
@@ -21,6 +22,7 @@ function Input({ className, type = "text", icon, variant, ...props }: InputProps
       ) : null}
 
       <input
+        required
         type={inputType}
         data-slot="input"
         className={cn(
@@ -29,8 +31,10 @@ function Input({ className, type = "text", icon, variant, ...props }: InputProps
           "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
           icon ? "pl-10" : "",
           isPassword ? "pr-10" : "",
+          hasError && "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20",
           className
         )}
+        aria-invalid={hasError}
         {...props}
       />
 
