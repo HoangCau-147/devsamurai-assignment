@@ -2,9 +2,6 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
-  Command,
-  GalleryVerticalEnd,
   Home,
   MessageCircle,
   Plus,
@@ -12,10 +9,9 @@ import {
   Users,
 } from "lucide-react"
 
-import { NavProjects } from "./nav-projects"
 import { NavUser } from "./nav-user"
 import { TeamSwitcher } from "./team-switcher"
-import DraggableDropdown from "./draggable-dropdown"
+import { DraggableNavMain } from "./draggable-dropdown"
 import {
   Sidebar,
   SidebarContent,
@@ -25,6 +21,7 @@ import {
 } from "@/components/ui/sidebar"
 
 import { getUser } from "@/lib/auth"
+import { NavMain } from "./nav-main"
 
 const data = {
   user: {
@@ -32,20 +29,6 @@ const data = {
     email: getUser()?.email,
     avatar: "/avatars/shadcn.jpg",
   },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-    },
-  ],
   projects: [
     {
       name: "Home",
@@ -64,9 +47,24 @@ const data = {
     },
   ],
   favorites: [
-    { id: "google", name: "Google", icon: GalleryVerticalEnd },
-    { id: "airbnb", name: "Airbnb", icon: AudioWaveform },
-    { id: "microsoft", name: "Microsoft", icon: Command },
+    {
+      id: "google",
+      name: "Google",
+      url: "https://google.com",
+      favicon: "https://www.google.com/s2/favicons?sz=64&domain=google.com",
+    },
+    {
+      id: "airbnb",
+      name: "Airbnb",
+      url: "https://airbnb.com",
+      favicon: "https://www.google.com/s2/favicons?sz=64&domain=airbnb.com",
+    },
+    {
+      id: "github",
+      name: "GitHub",
+      url: "https://github.com",
+      favicon: "https://www.google.com/s2/favicons?sz=64&domain=github.com",
+    }
   ],
   extends: [
     {
@@ -80,20 +78,20 @@ const data = {
       icon: MessageCircle,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher user={data.user} />
       </SidebarHeader>
 
       <SidebarContent>
-        <NavProjects items={data.projects} />
+        <NavMain items={data.projects} />
 
         <div className="p-3">
-          <DraggableDropdown
+          <DraggableNavMain
             items={data.favorites}
             title="Favorites"
             triggerLabel="Favorites"
@@ -103,7 +101,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarFooter>
-        <NavProjects items={data.extends} />
+        <NavMain items={data.extends} />
 
         <NavUser user={data.user} />
       </SidebarFooter>

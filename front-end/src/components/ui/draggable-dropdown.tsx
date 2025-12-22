@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   DndContext,
   closestCenter,
@@ -9,153 +9,265 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
-} from "@dnd-kit/core"
+} from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   rectSortingStrategy,
   useSortable,
   sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
-import { GripVertical, ChevronDown } from "lucide-react"
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers"
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { GripVertical, ChevronDown, StarOff } from "lucide-react";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import { cn } from "@/lib/utils";
 
-import { cn } from "@/lib/utils"
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/components/ui/collapsible";
+import {
+  SidebarGroup,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+} from "@/components/ui/sidebar";
 
-export type DraggableItem = {
-  id: string
-  name: string
-  icon?: React.ElementType | null
-}
+import { useSidebar } from "@/components/ui/sidebar";
+
+export type NavItem = {
+  id: string;
+  name: string;
+  url?: string;
+  favicon?: string;
+  children?: NavItem[];
+};
 
 type Props = {
-  items: DraggableItem[]
-  title?: string
-  triggerLabel?: string
-  onOrderChange?: (items: DraggableItem[]) => void
-}
+  items: NavItem[];
+  title?: string;
+  triggerLabel?: string;
+  onOrderChange?: (items: NavItem[]) => void;
+};
 
-function SortableItem({ item }: { item: DraggableItem }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id })
+function SortableNavItem({ item }: { item: NavItem }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 50 : undefined,
+  };
+
+  const hasVisual = !!item.favicon;
+
+  const AvatarIcon = (
+    <div className="h-4 w-4 flex shrink-0 items-center justify-center overflow-hidden rounded-sm">
+      {item.favicon ? (
+        <img
+          src={item.favicon}
+          alt=""
+          className="h-full w-full object-contain"
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+            e.currentTarget.nextElementSibling?.classList.remove("hidden");
+          }}
+        />
+      ) : null}
+
+      <span
+        className={cn(
+          "text-xs font-semibold text-muted-foreground",
+          hasVisual && "hidden"
+        )}
+      >
+        {item.name.charAt(0).toUpperCase()}
+      </span>
+    </div>
+  );
+
+  if (item.children && item.children.length > 0) {
+    return (
+      <li ref={setNodeRef} style={style} className="relative group/li">
+        <Collapsible asChild>
+          <SidebarMenuItem>
+            <CollapsibleTrigger asChild>
+              <SidebarMenuButton tooltip={item.name} className="w-full">
+                <button
+                  aria-label={`Drag ${item.name}`}
+                  type="button"
+                  className="absolute left-0 top-1/2 hidden group-hover/li:inline-flex items-center justify-center rounded text-muted-foreground hover:text-foreground z-10"
+                  {...listeners}
+                  {...attributes}
+                >
+                  <GripVertical className="size-2.5" />
+                </button>
+
+                <div className="flex items-center w-full">
+                  {AvatarIcon}
+                  <span className="ml-3">{item.name}</span>
+                  <StarOff className="hidden group-hover/li:inline-block ml-auto size-2.5" />
+                </div>
+              </SidebarMenuButton>
+            </CollapsibleTrigger>
+
+            <CollapsibleContent>
+              <SidebarMenuSub>
+                {item.children.map((subItem) => (
+                  <SidebarMenuSubItem key={subItem.id}>
+                    <SidebarMenuSubButton asChild>
+                      <a href={subItem.url}>
+                        <span>{subItem.name}</span>
+                      </a>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                ))}
+              </SidebarMenuSub>
+            </CollapsibleContent>
+          </SidebarMenuItem>
+        </Collapsible>
+      </li>
+    );
   }
 
-  const Icon = item.icon
-
   return (
-    <li
-      ref={setNodeRef}
-      style={style}
-      className={cn(
-        "group flex items-center gap-3 rounded-md px-2 py-2 bg-transparent text-popover-foreground w-full",
-        "border border-transparent hover:border-border"
-      )}
-    >
-      <button
-        aria-label={`Drag ${item.name}`}
-        type="button"
-        className="hidden group-hover:inline-flex items-center justify-center rounded text-muted-foreground hover:text-foreground"
-        {...listeners}
-        {...attributes}
-      >
-        <GripVertical className="size-3" />
-      </button>
+    <li ref={setNodeRef} style={style} className="relative group/li">
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild tooltip={item.name} className="w-full">
+          <a href={item.url} className="flex items-center w-full">
+            <button
+              aria-label={`Drag ${item.name}`}
+              type="button"
+              className="absolute -left-1 top-1/2 -translate-y-1/2 hidden group-hover/li:inline-flex items-center justify-center rounded text-muted-foreground hover:text-foreground z-10"
+              {...listeners}
+              {...attributes}
+            >
+              <GripVertical className="size-2.5" />
+            </button>
 
-      <div className="h-6 w-6 rounded-md bg-gray-100 flex items-center justify-center">
-        {Icon ? (
-          <Icon className="size-4 text-muted-foreground" />
-        ) : (
-          <div className="h-3 w-3 rounded-full bg-muted" />
-        )}
-      </div>
-      <div className="flex-1 text-sm font-medium truncate">{item.name}</div>
+            <div className="flex items-center w-full">
+              {AvatarIcon}
+              <span className="ml-3">{item.name}</span>
+              <StarOff className="hidden group-hover/li:inline-block ml-auto size-2.5" />
+            </div>
+          </a>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
     </li>
   );
 }
 
-export function DraggableDropdown({ items: initialItems, title = "Favorites", triggerLabel = "Favorites", onOrderChange }: Props) {
-  const [items, setItems] = React.useState<DraggableItem[]>(initialItems)
+export function DraggableNavMain({
+  items: initialItems,
+  title = "Menu",
+  triggerLabel = "Menu",
+  onOrderChange,
+}: Props) {
+  const [items, setItems] = React.useState<NavItem[]>(initialItems);
+  const { state } = useSidebar();
 
   React.useEffect(() => {
-    setItems(initialItems)
-  }, [initialItems])
+    setItems(initialItems);
+  }, [initialItems]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  )
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
-    if (!over) return
-    if (active.id !== over.id) {
-      const oldIndex = items.findIndex((i) => i.id === active.id)
-      const newIndex = items.findIndex((i) => i.id === over.id)
-      const newItems = arrayMove(items, oldIndex, newIndex)
-      setItems(newItems)
-      onOrderChange?.(newItems)
-    }
-  }
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-  const [open, setOpen] = React.useState(true)
-  const panelRef = React.useRef<HTMLDivElement | null>(null)
-  const triggerRef = React.useRef<HTMLButtonElement | null>(null)
+    setItems((currentItems) => {
+      const oldIndex = currentItems.findIndex((i) => i.id === active.id);
+      const newIndex = currentItems.findIndex((i) => i.id === over.id);
+      const newItems = arrayMove(currentItems, oldIndex, newIndex);
+      onOrderChange?.(newItems);
+      return newItems;
+    });
+  };
+
+  const [open, setOpen] = React.useState(true);
+
+  const panelRef = React.useRef<HTMLDivElement>(null);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
 
   React.useEffect(() => {
-    function onDoc(e: MouseEvent) {
-      if (!open) return
-      const target = e.target as Node
-      if (panelRef.current && !panelRef.current.contains(target) && triggerRef.current && !triggerRef.current.contains(target)) {
-        setOpen(false)
-      }
-    }
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false)
-    }
-    document.addEventListener("mousedown", onDoc)
-    document.addEventListener("keydown", onKey)
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
     return () => {
-      document.removeEventListener("mousedown", onDoc)
-      document.removeEventListener("keydown", onKey)
-    }
-  }, [open])
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open]);
+
+  const isSidebarExpanded = state === "expanded";
 
   return (
     <div className="relative">
-      <button
-        ref={triggerRef}
-        aria-expanded={open}
-        aria-controls={`${title}-panel`}
-        onClick={() => setOpen((v) => !v)}
-        className="group inline-flex w-full items-center justify-between rounded-md px-2 py-3 text-sm font-medium hover:bg-accent"
-      >
-        <span>{triggerLabel}</span>
-        <ChevronDown className={`hidden group-hover:inline-block ml-2 size-4 transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
+      {isSidebarExpanded && (
+        <button
+          ref={triggerRef}
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-controls={`${title}-panel`}
+          className="group/button inline-flex w-full items-center justify-between rounded-md p-2 text-sm font-medium hover:bg-accent"
+        >
+          <span>{triggerLabel}</span>
+          <ChevronDown
+            className={cn(
+              "ml-2 size-4 transition-transform hidden group-hover/button:inline-block",
+              open && "rotate-180"
+            )}
+          />
+        </button>
+      )}
 
       <div
         id={`${title}-panel`}
         ref={panelRef}
-        className={`${open ? "block" : "hidden"} mt-2 w-64 rounded-md bg-transparent`}
+        className={cn("mt-2", open ? "block" : "hidden")}
         role="region"
       >
-        <DndContext sensors={sensors} modifiers={[restrictToVerticalAxis]} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={items.map((i) => i.id)} strategy={rectSortingStrategy}>
-            <ul role="list" className="flex flex-col">
-              {items.map((it) => (
-                <SortableItem key={it.id} item={it} />
-              ))}
-            </ul>
-          </SortableContext>
-        </DndContext>
+        <SidebarGroup>
+          <DndContext
+            sensors={sensors}
+            modifiers={[restrictToVerticalAxis]}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={items.map((i) => i.id)}
+              strategy={rectSortingStrategy}
+            >
+              <SidebarMenu>
+                {items.map((item) => (
+                  <SortableNavItem key={item.id} item={item} />
+                ))}
+              </SidebarMenu>
+            </SortableContext>
+          </DndContext>
+        </SidebarGroup>
       </div>
     </div>
-  )
+  );
 }
 
-export default DraggableDropdown
+export default DraggableNavMain;

@@ -37,16 +37,14 @@ const projects = [
 ];
   
 export function TeamSwitcher({
-  teams,
+  user,
 }: {
-  teams: {
+  user: {
     name: string
-    logo: React.ElementType
-    plan: string
-  }[]
+    email: string
+    avatar: string
+  }
 }) {
-  const userName = getUser()!.name;
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -58,11 +56,11 @@ export function TeamSwitcher({
             >
               <Avatar className="h-6 w-6 rounded-md border-2 border-solid border-gray-200">
                 <AvatarFallback className="rounded-md bg-gray-200/50">
-                  {userName!.charAt(0).toUpperCase()}
+                  {user.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{userName}</span>
+                <span className="truncate font-medium">{user.name}</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -83,11 +81,11 @@ export function TeamSwitcher({
             >
               <Avatar className="h-5 w-5 rounded-xs border border-solid border-gray-200">
                 <AvatarFallback className="rounded-xs bg-gray-200/50">
-                  {userName!.charAt(0).toUpperCase()}
+                  {user.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate">{userName}</span>
+                <span className="truncate">{user.name}</span>
               </div>
               <div className="relative">
                   <input checked type="checkbox" className="sr-only peer" />
