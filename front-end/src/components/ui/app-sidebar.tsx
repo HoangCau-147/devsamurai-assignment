@@ -23,12 +23,13 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+
 import { getUser } from "@/lib/auth"
 
 const data = {
   user: {
-    name: getUser()!.name,
-    email: getUser()!.email,
+    name: getUser()?.name,
+    email: getUser()?.email,
     avatar: "/avatars/shadcn.jpg",
   },
   teams: [

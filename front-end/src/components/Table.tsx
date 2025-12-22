@@ -1,61 +1,63 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { ArrowRight } from "lucide-react";
 
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-  },
-]
+export type ContactItem = {
+  id: string;
+  name: string;
+  avatar?: string | null;
+  count: number;
+};
 
-export function TableDemo() {
+interface Props {
+  title?: string;
+  items?: ContactItem[];
+  className?: string;
+}
+
+export function TableVisit({
+  title = "Most visited contacts",
+  items = [],
+  className = "",
+}: Props) {
   return (
-    <Table className='border-t-0'>
-      <span className="block mb-4 w-full">Most visited contacts</span>
-      <TableHeader>
-        <TableRow>
-          <TableHead className=""></TableHead>
-          <TableHead className="ml-auto"></TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {invoices.map((invoice) => (
-          <TableRow key={invoice.invoice}>
-            <TableCell className="font-medium">{invoice.invoice}</TableCell>
-            <TableCell className="text-right">{invoice.paymentStatus}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  )
+    <div className="rounded-2xl border border-solid overflow-hidden w-full p-6">
+      <Table className={`${className}`}>
+        <div className="block w-full font-medium mb-6">{title}</div>
+  
+        <TableBody>
+          {items.map((item) => (
+            <TableRow
+              key={item.id}
+              className="group hover:bg-muted/30 transition-colors duration-150 border-b-0"
+            >
+              <TableCell className="font-medium first:rounded-l-sm last:rounded-r-rounded-l-sm">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-5 w-5">
+                    {item.avatar ? (
+                      <AvatarImage src={item.avatar} alt={item.name} />
+                    ) : (
+                      <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
+                    )}
+                  </Avatar>
+                  <span className="truncate">{item.name}</span>
+                </div>
+              </TableCell>
+  
+              <TableCell className="text-right first:rounded-l-sm last:rounded-r-rounded-l-sm">
+                <div className="relative inline-block w-3 h-3">
+                  <span className="absolute inset-0 flex items-center justify-end transition-opacity duration-150 group-hover:opacity-0">
+                    {item.count}
+                  </span>
+                  <span className="absolute inset-0 flex items-center justify-end opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                    <ArrowRight className="size-4" />
+                  </span>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
 }
