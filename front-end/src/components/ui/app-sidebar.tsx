@@ -24,11 +24,6 @@ import { getUser } from "@/lib/auth"
 import { NavMain } from "./nav-main"
 
 const data = {
-  user: {
-    name: getUser()?.name,
-    email: getUser()?.email,
-    avatar: "/avatars/shadcn.jpg",
-  },
   projects: [
     {
       name: "Home",
@@ -81,10 +76,29 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [user, setUser] = React.useState(getUser());
+
+  React.useEffect(() => {
+    const handleUserChange = () => {
+      setUser(getUser());
+    };
+    
+    window.addEventListener('userChanged', handleUserChange);
+    return () => window.removeEventListener('userChanged', handleUserChange);
+  }, []);
+
+  const dataUser = {
+    user: {
+      name: user?.name,
+      email: user?.email,
+      avatar: user?.avatar || "/avatars/shadcn.jpg",
+    },
+  };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher user={data.user} />
+        <TeamSwitcher user={dataUser.user} />
       </SidebarHeader>
 
       <SidebarContent>
@@ -103,7 +117,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <NavMain items={data.extends} />
 
-        <NavUser user={data.user} />
+        <NavUser user={dataUser.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

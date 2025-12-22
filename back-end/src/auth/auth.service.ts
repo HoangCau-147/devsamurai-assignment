@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService, SafeUser } from '../users/users.service';
@@ -21,9 +21,29 @@ export class AuthService {
   async signup(
     dto: AuthSignupDto,
   ): Promise<{ user: SafeUser; accessToken: string; refreshToken: string }> {
-    const user = await this.users.create(dto);
-    const tokens = this.getTokens(user.id, user.email);
-    return { user, ...tokens };
+    try {
+      const user = await this.users.create(dto);
+
+      const tokens = this.getTokens(user.id, user.email);
+
+      const safeUser: SafeUser = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      };
+
+      return { user: safeUser, ...tokens };
+    } catch (error) {
+      if (error.code === 'P2002' || error.message?.includes('Unique constraint')) {
+        throw new BadRequestException('This email is already taken by another account.');
+      }
+
+      if (error instanceof BadRequestException || error.name === 'ValidationError') {
+        throw error;
+      }
+
+      throw new BadRequestException('Registration failed. Please try again later.');
+    }
   }
 
   async login(
@@ -31,15 +51,22 @@ export class AuthService {
     password: string,
   ): Promise<{ user: SafeUser; accessToken: string; refreshToken: string }> {
     const user = await this.users.findByEmail(email);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
 
-    const userWithHash = user;
-    const valid = await bcrypt.compare(password, userWithHash.passwordHash);
-    if (!valid) throw new UnauthorizedException('Invalid credentials');
+    if (!user) {
+      throw new UnauthorizedException('Invalid email or password.');
+    }
 
-    const { id, email: userEmail, name } = userWithHash;
+    const valid = await bcrypt.compare(password, user.passwordHash);
+
+    if (!valid) {
+      throw new UnauthorizedException('Invalid email or password.');
+    }
+
+    const { id, email: userEmail, name } = user;
     const tokens = this.getTokens(id, userEmail);
+
     const safeUser: SafeUser = { id, email: userEmail, name };
+
     return { user: safeUser, ...tokens };
   }
 

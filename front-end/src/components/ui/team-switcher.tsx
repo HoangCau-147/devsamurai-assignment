@@ -91,7 +91,7 @@ export function TeamSwitcher({
                   <input checked type="checkbox" className="sr-only peer" />
                   <div className="w-4 h-4 bg-gray-200 rounded-full border-2 border-gray-300 peer-checked:bg-blue-500 peer-checked:border-blue-500 transition-all duration-200 peer-focus:ring-2 peer-focus:ring-blue-300 peer-focus:ring-offset-2"></div>
                   <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white hidden peer-checked:block pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
                   </svg>
               </div>
             </SidebarMenuButton>
