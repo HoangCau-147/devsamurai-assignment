@@ -12,13 +12,22 @@ import { TableVisit, type ContactItem } from "@/components/Table"
 
 import usePageTitle from "@/hooks/use-page-title"
 
-export const SAMPLE_CONTACTS: ContactItem[] = [
+const MOST_VISIT_CONTACTS: ContactItem[] = [
   { id: "1", name: "Airbnb", avatar: null, count: 3 },
   { id: "2", name: "Vivian Casey", avatar: null, count: 1 },
   { id: "3", name: "Zoom", avatar: null, count: 0 },
   { id: "4", name: "PayPal", avatar: null, count: 0 },
   { id: "5", name: "Thomas Clark", avatar: null, count: 0 },
   { id: "6", name: "Gabriel Fischer", avatar: null, count: 0 },
+]
+
+const LEAST_VISIT_CONTACTS: ContactItem[] = [
+  { id: "1", name: "Ishaan Richardson", avatar: null, count: 0 },
+  { id: "2", name: "Gabriel Fischer", avatar: null, count: 0 },
+  { id: "3", name: "Thomas Clark", avatar: null, count: 0 },
+  { id: "4", name: "PayPal", avatar: null, count: 0 },
+  { id: "5", name: "Zoom", avatar: null, count: 0 },
+  { id: "6", name: "Lucia Bianchi", avatar: null, count: 0 },
 ]
 
 export default function Dashboard() {
@@ -112,11 +121,13 @@ export default function Dashboard() {
           <div className="w-full border border-solid border-x-0 px-6">
             <DatePickerWithRangeForm />
           </div>
-          <div className="w-full mx-auto max-w-6xl">
-            <ChartBarInteractive/>
-            <div className="flex gap-8 mt-8">
-              <TableVisit items={SAMPLE_CONTACTS} />
-              <TableVisit items={SAMPLE_CONTACTS} />
+          <div className="w-full px-2 md:px-6">
+            <div className="w-full mx-auto max-w-6xl">
+              <ChartBarInteractive/>
+              <div className="flex flex-col gap-2 md:flex-row md:gap-8 mt-2 md:mt-8 ">
+                <TableVisit items={MOST_VISIT_CONTACTS} />
+                <TableVisit title='Least visited contacts' items={LEAST_VISIT_CONTACTS} />
+              </div>
             </div>
           </div>
         </div>

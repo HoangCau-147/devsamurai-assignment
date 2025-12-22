@@ -281,7 +281,7 @@ export default function AuthPage() {
               <button
                 type="button"
                 onClick={() => setCurrentTab("login")}
-                className="underline hover:cursor-pointer text-black"
+                className="underline hover:cursor-pointer text-black dark:text-white"
               >
                 Sign in
               </button>
@@ -452,7 +452,7 @@ export default function AuthPage() {
               <button
                 type="button"
                 onClick={() => setCurrentTab("signup")}
-                className="underline hover:cursor-pointer text-black"
+                className="underline hover:cursor-pointer text-black dark:text-white"
               >
                 Sign up
               </button>

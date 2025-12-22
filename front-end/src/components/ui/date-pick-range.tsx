@@ -112,7 +112,7 @@ export function DatePickerWithRangeForm() {
               <FormItem className="flex flex-col">
                 <Popover open={open} onOpenChange={setOpen}>
                   <div className="flex items-center gap-3">
-                    <div className="inline-flex items-center gap-2 bg-transparent">
+                    <div className="hidden md:inline-flex items-center gap-2 bg-transparent">
                       {presets.map((p) => (
                         <button
                           key={p.label}
@@ -146,12 +146,12 @@ export function DatePickerWithRangeForm() {
                       <button
                         type="button"
                         className={cn(
-                          "inline-flex items-center gap-3 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-1 text-sm text-white max-w-70",
+                          "inline-flex items-center gap-3 rounded-md border text-black px-3 py-1 text-sm dark:text-white max-w-70 my-1",
                           !field.value && "text-muted-foreground"
                         )}
                       >
-                        <div className="inline-flex items-center justify-center bg-neutral-800 rounded-sm p-1">
-                          <CalendarIcon className="h-4 w-4 text-white" />
+                        <div className="inline-flex items-center justify-center rounded-sm p-1">
+                          <CalendarIcon className="h-4 w-4 dark:text-white" />
                         </div>
                         <span className="truncate">{leftLabel}</span>
                       </button>

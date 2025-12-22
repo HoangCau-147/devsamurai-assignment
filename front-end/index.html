@@ -9,7 +9,6 @@
   <body>
     <div id="root"></div>
     <script>
-      // Pre-hydration theme application to avoid FOUC
       (function () {
         try {
           var theme = localStorage.getItem('theme');
@@ -23,7 +22,7 @@
             document.documentElement.classList.remove('dark');
           }
         } catch (e) {
-          // ignore
+          console.error(e);
         }
       })();
     </script>
