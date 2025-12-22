@@ -29,6 +29,8 @@ import {
   watchSystemTheme,
   type Theme,
 } from "@/lib/theme";
+import { useNavigate } from "react-router-dom";
+import { clearAuth } from "@/lib/auth";
 
 export function NavUser({
   user,
@@ -45,6 +47,7 @@ export function NavUser({
     return stored ?? "system";
   });
   const systemUnwatch = useRef<() => void | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     applyTheme(theme);
@@ -73,6 +76,11 @@ export function NavUser({
       systemUnwatch.current = null;
     }
   }, [theme]);
+
+  const handleLogout = () => {
+    clearAuth();
+    navigate('/login');
+  };
 
   return (
     <SidebarMenu>
@@ -144,7 +152,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleLogout()}>
               Log out
               <DropdownMenuShortcut>⇧⌘S</DropdownMenuShortcut>
             </DropdownMenuItem>
