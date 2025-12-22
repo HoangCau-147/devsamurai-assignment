@@ -7,8 +7,8 @@ import {
 } from "@/components/ui/sidebar"
 
 import { ChartBarInteractive } from "@/components/ui/chart-bar-interactive"
-import { DatePickerWithRangeForm } from "@/components/ui/date-pick-range"
-import { TableVisit, type ContactItem } from "@/components/Table"
+import { DatePickerWithRangeForm } from "@/components/date-pick-range"
+import { TableVisit, type ContactItem } from "@/components/table"
 
 import usePageTitle from "@/hooks/use-page-title"
 import { CircleAlert } from "lucide-react"
