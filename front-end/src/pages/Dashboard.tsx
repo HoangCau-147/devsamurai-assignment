@@ -10,6 +10,8 @@ import { ChartBarInteractive } from "@/components/ui/chart-bar-interactive"
 import { DatePickerWithRangeForm } from "@/components/ui/date-pick-range"
 import { TableVisit, type ContactItem } from "@/components/Table"
 
+import usePageTitle from "@/hooks/use-page-title"
+
 export const SAMPLE_CONTACTS: ContactItem[] = [
   { id: "1", name: "Airbnb", avatar: null, count: 3 },
   { id: "2", name: "Vivian Casey", avatar: null, count: 1 },
@@ -20,6 +22,8 @@ export const SAMPLE_CONTACTS: ContactItem[] = [
 ]
 
 export default function Dashboard() {
+  usePageTitle("home");
+
   return (
     <SidebarProvider>
       <AppSidebar />

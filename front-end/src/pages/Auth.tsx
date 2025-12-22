@@ -14,10 +14,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import usePageTitle from "@/hooks/use-page-title";
 
 export default function AuthPage() {
   const navigate = useNavigate();
   const [currentTab, setCurrentTab] = useState<"login" | "signup">("login");
+
+  usePageTitle(currentTab);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
