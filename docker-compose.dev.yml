@@ -1,8 +1,7 @@
-version: '3.8'
-
+# docker-compose.dev.yml
 services:
   database:
-    image: postgres:15
+    image: postgres:16-alpine
     container_name: devsamurai-postgres
     environment:
       POSTGRES_USER: devsamurai
@@ -12,5 +11,69 @@ services:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devsamurai -d devsamurai"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  back-end:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    container_name: devsamurai-backend
+    environment:
+      DATABASE_URL: postgresql://devsamurai:devsamurai@database:5432/devsamurai
+      NODE_ENV: development
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./back-end/src:/app/src
+      - ./back-end/prisma:/app/prisma
+      - ./back-end/package.json:/app/package.json
+      - ./back-end/.env:/app/.env
+    depends_on:
+      database:
+        condition: service_healthy
+    command: >
+      sh -c "
+        echo '=== Generating Prisma Client ===' &&
+        pnpm prisma generate &&
+
+        echo '=== Waiting for database ===' &&
+        until pg_isready -h database -p 5432 -U devsamurai; do
+          echo 'Waiting for PostgreSQL...'
+          sleep 3
+        done &&
+
+        echo '=== Applying migrations ===' &&
+        pnpm prisma migrate deploy &&
+
+        echo '=== Running seed ===' &&
+        pnpm run prisma:seed &&
+
+        echo '=== Starting NestJS dev server ===' &&
+        pnpm run start:dev
+      "
+
+  front-end:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    container_name: devsamurai-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./front-end/src:/app/src
+      - ./front-end/package.json:/app/package.json
+      - ./front-end/vite.config.ts:/app/vite.config.ts
+      - ./front-end/index.html:/app/index.html
+    environment:
+      VITE_API_URL: http://localhost:5000
+    depends_on:
+      - back-end
+
 volumes:
-  db-data: {}
+  db-data:

@@ -15,15 +15,12 @@ async function bootstrap() {
   console.log(`Global API prefix set to /${apiPrefix}`);
 
   // Enable CORS for the front-end dev server (and allow overriding via env)
-  const FRONTEND_URL = process.env.FRONTEND_URL ?? 'http://localhost:5173';
   app.enableCors({
-    origin: FRONTEND_URL,
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type,Authorization',
     credentials: true,
   });
-
-  console.log(`CORS enabled for ${FRONTEND_URL}`);
 
   await app.listen(process.env.PORT ?? 3000);
 }
